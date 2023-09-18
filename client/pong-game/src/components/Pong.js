@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import socket from './socket'; 
 import PlayerList from './PlayerList';
 import Chat from './Chat';
+import { GameContext } from '../context/GameContext';
+
 
 
 const Pong = () => {
   const [players, setPlayers] = useState({});
   const [messages, setMessages] = useState('');
+  const context = useContext(GameContext);
 
 
   useEffect(() => {
@@ -14,6 +17,7 @@ const Pong = () => {
       console.log('connected to Client');
     });
     }, []);
+
 
   useEffect(() => {
       socket.on('PlayersRefresh', (players) => {
@@ -23,7 +27,7 @@ const Pong = () => {
 
   useEffect(() => {
     socket.on('ReceiveMessage', (receiveMessage) => {
-      setMessages(messages + '\n\n' + receiveMessage);
+      setMessages(messages   + receiveMessage + '\n\n');
       });
   },[messages])
   
@@ -34,12 +38,16 @@ const Pong = () => {
 
 
 	return (
-		<div style ={{display: 'flex', flexDirection: 'row'}}>
-			
-			<PlayerList players = {players}/>
-			<Chat sendMessage = {sendMessage} messages={messages}/>
-			
-		</div>
+
+    <>
+      {context}
+      <div style ={{display: 'flex', flexDirection: 'row'}}>
+        
+        <PlayerList players = {players}/>
+        <Chat sendMessage = {sendMessage} messages={messages}/>
+        
+      </div>
+    </>
 	);
 }
 

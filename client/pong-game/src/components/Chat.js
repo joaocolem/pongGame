@@ -7,7 +7,7 @@ const Chat = (props) => {
 
 	return (
 		<div style={{flex: 1}}>
-            <div> {props.messages}</div>
+            <div style= {{whiteSpace: 'pre-wrap'}}> {props.messages}</div>
             <input 
             type = 'text' 
             value ={messageToSend} 

@@ -1,5 +1,6 @@
 import express from 'express';
 import { createServer } from 'node:http';
+import { platform } from 'node:os';
 import { Server } from 'socket.io';
 
 const app = express();
@@ -25,20 +26,25 @@ sockets.on('connection', (socket) => {
 	
 	const name = 'Player_' + socket.id.substring(0,5)
 	game.players[socket.id] = { name };
+	sendMessage(game.players[socket.id], 'entrou');
 	refreshPlayers();
 
 
 	socket.on('disconnect', () =>{
+		sendMessage(game.players[socket.id], 'saiu');
 		delete game.players[socket.id];
 		refreshPlayers();
 	});
 
 	socket.on('SendMessage', (message) =>{
-		const player = game.players[socket.id];
-		sockets.emit('ReceiveMessage', `${player.name}: ${message}`)
+		sendMessage(game.players[socket.id], `${game.players[socket.id].name}: ${message}`);
 	});
 
 });
+
+const sendMessage = (player, message) => {
+	sockets.emit('ReceiveMessage', `${player.name}: ${message}`)
+}
 
 const refreshPlayers = () =>{
 	sockets.emit('PlayersRefresh', game.players);
