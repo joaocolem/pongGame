@@ -1,36 +1,44 @@
-import React, { useEffect } from 'react';
-import { io } from 'socket.io-client'
+import React, { useEffect, useState } from 'react';
+import socket from './socket'; 
+import PlayerList from './PlayerList';
+import Chat from './Chat';
+
 
 const Pong = () => {
-	useEffect(() => {
-		const socket = io('http://localhost:4000', {
-			extraHeaders: {
-				"header": "ul0hC9#g5ppd&48p",
-			},
-		});
+  const [players, setPlayers] = useState({});
+  const [messages, setMessages] = useState('');
 
-		socket.on('connect', () => {
-			console.log('connected to Client');
-		});
-	}, []);
 
-	const players = {
-		player1: {
-			name: 'Player 1',
-		},
-		player2: {
-			name: 'Player 2',
-		},
-	};
+  useEffect(() => {
+    socket.on('connect', () => {
+      console.log('connected to Client');
+    });
+    }, []);
+
+  useEffect(() => {
+      socket.on('PlayersRefresh', (players) => {
+        setPlayers(players);
+      });
+      }, [players]);
+
+  useEffect(() => {
+    socket.on('ReceiveMessage', (receiveMessage) => {
+      setMessages(messages + '\n\n' + receiveMessage);
+      });
+  },[messages])
+  
+
+  const sendMessage = (message) => {
+	  socket.emit('SendMessage', message);
+  };
+
 
 	return (
-		<div>
-			{
-				Object.keys(players)
-				.map(
-					(key) => (<div>{players[key].name}</div>)
-				)
-			}
+		<div style ={{display: 'flex', flexDirection: 'row'}}>
+			
+			<PlayerList players = {players}/>
+			<Chat sendMessage = {sendMessage} messages={messages}/>
+			
 		</div>
 	);
 }

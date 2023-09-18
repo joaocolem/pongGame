@@ -11,11 +11,38 @@ const sockets = new Server(server, {
 		allowedHeaders: ["header"],
 	}
 });
+
+const game = {
+	players: {},
+};
+
+
 const port = 4000;
 
 sockets.on('connection', (socket) => {
 	console.log(`${socket.id} connected to server`);
+	
+	
+	const name = 'Player_' + socket.id.substring(0,5)
+	game.players[socket.id] = { name };
+	refreshPlayers();
+
+
+	socket.on('disconnect', () =>{
+		delete game.players[socket.id];
+		refreshPlayers();
+	});
+
+	socket.on('SendMessage', (message) =>{
+		const player = game.players[socket.id];
+		sockets.emit('ReceiveMessage', `${player.name}: ${message}`)
+	});
+
 });
+
+const refreshPlayers = () =>{
+	sockets.emit('PlayersRefresh', game.players);
+}
 
 app.get('/', (req, res) => res.send('Hello World'));
 

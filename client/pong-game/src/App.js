@@ -4,7 +4,7 @@ import Pong from './components/Pong';
 function App() {
   return (
     <div className="App">
-		  <Pong />
+      <Pong />
 	</div>  
   );
 }
