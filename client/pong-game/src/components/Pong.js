@@ -10,12 +10,15 @@ const Pong = () => {
   const [players, setPlayers] = useState({});
   const [messages, setMessages] = useState('');
   const context = useContext(GameContext);
+  const playerInfo = socket.id;
+
 
 
   useEffect(() => {
     socket.on('connect', () => {
       console.log('connected to Client');
     });
+    
     }, []);
 
 
@@ -32,6 +35,7 @@ const Pong = () => {
   },[messages])
   
 
+
   const sendMessage = (message) => {
 	  socket.emit('SendMessage', message);
   };
@@ -42,11 +46,13 @@ const Pong = () => {
     <>
       {context}
       <div style ={{display: 'flex', flexDirection: 'row'}}>
-        
+
         <PlayerList players = {players}/>
-        <Chat sendMessage = {sendMessage} messages={messages}/>
+        <Chat sendMessage = {sendMessage} messages={messages} userName = {playerInfo.substring(0,5)}/>
         
       </div>
+      Seu userName: {playerInfo.substring(0,5)}
+      
     </>
 	);
 }

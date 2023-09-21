@@ -5,6 +5,7 @@ import { Server } from 'socket.io';
 
 const app = express();
 const server = createServer(app);
+
 const sockets = new Server(server, {
 	cors: {
 		origin: "http://localhost:3000",
@@ -22,10 +23,12 @@ const port = 4000;
 
 sockets.on('connection', (socket) => {
 	console.log(`${socket.id} connected to server`);
-	
-	
+
+
 	const name = 'Player_' + socket.id.substring(0,5)
 	game.players[socket.id] = { name };
+	
+
 	sendMessage(game.players[socket.id], 'entrou');
 	refreshPlayers();
 
@@ -36,9 +39,12 @@ sockets.on('connection', (socket) => {
 		refreshPlayers();
 	});
 
+
+
 	socket.on('SendMessage', (message) =>{
-		sendMessage(game.players[socket.id], `${game.players[socket.id].name}: ${message}`);
+		sendMessage(game.players[socket.id], `: ${message}`);
 	});
+
 
 });
 
